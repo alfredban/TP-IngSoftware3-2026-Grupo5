@@ -1,0 +1,20 @@
+
+
+correr fastAPI (back) 
+
+1-abrir terminal en backend
+
+2- poner en la terminal : python -m uvicorn main:app --reload
+
+http://localhost:8000/
+
+
+correr front
+
+1- abrir terminal en frontend
+
+2- pone en terminr npm run dev
+
+http://localhost:5173/
+
+para paralo ctrl+c
