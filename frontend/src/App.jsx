@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
+import Upload from './pages/Upload'
 import './css/App.css'
 
 function App() {
@@ -9,8 +10,8 @@ function App() {
         {/* Cuando el usuario esté en la raíz (/), muestra el componente Home */}
         <Route path="/" element={<Home />} />
         
-        {/* Aquí podrías agregar más rutas fácilmente */}
-        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+        <Route path="/" element={<Home />} />
+        <Route path="/upload" element={<Upload />} />
       </Routes>
     </BrowserRouter>
   )
