@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -20,15 +19,3 @@ def home():
 @app.get("/api/test")
 def test():
     return {"mensaje": "¡Conexión exitosa desde el servidor!"}
-
-@app.post("/api/upload")
-async def upload_file(file: UploadFile = File(...)):
-    contenido = await file.read()
-    texto = contenido.decode("utf-8")
-    
-    return {
-        "nombre_archivo": file.filename,
-        "tamaño_bytes": len(contenido),
-        "lineas": len(texto.splitlines()),
-        "mensaje": "Archivo recibido correctamente"
-    }
