@@ -6,55 +6,63 @@ function Upload() {
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState(null)
 
-  const handleSeleccion = (e) => {
-    setArchivo(e.target.files[0])
-    setRespuesta(null)
-    setError(null)
-  }
-
   const handleSubir = async () => {
     if (!archivo) return
-
     setCargando(true)
     setError(null)
+    setRespuesta(null)
 
     const formData = new FormData()
     formData.append('file', archivo)
 
     try {
-      const res = await fetch('http://localhost:8000/api/upload', {
+      // Usamos 127.0.0.1 para evitar demoras de resolución de DNS en local
+      const res = await fetch('http://127.0.0.1:8000/api/upload', {
         method: 'POST',
         body: formData,
       })
+      
       const data = await res.json()
-      setRespuesta(data)
+
+      if (!res.ok) {
+        setError(data.detail || 'Error en la validación')
+      } else {
+        setRespuesta(data)
+      }
     } catch (err) {
-      setError('Error al conectar con el servidor')
+      setError('Error de conexión. Asegurate de que el Backend esté corriendo.')
     } finally {
       setCargando(false)
     }
   }
 
   return (
-    <div>
-      <h2>Cargar chat de WhatsApp</h2>
+    <div style={{ maxWidth: '500px', margin: '50px auto', fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <h2 style={{ color: '#075E54' }}>Validar Formato de Chat</h2>
+      
+      <div style={{ border: '1px solid #ccc', padding: '20px', borderRadius: '10px' }}>
+        <input type="file" accept=".txt" onChange={(e) => setArchivo(e.target.files[0])} />
+        <br /><br />
+        <button onClick={handleSubir} disabled={!archivo || cargando} style={{
+          padding: '10px 20px', backgroundColor: '#25D366', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer'
+        }}>
+          {cargando ? 'Validando...' : 'Subir Archivo'}
+        </button>
+      </div>
 
-      <input type="file" accept=".txt" onChange={handleSeleccion} />
-
-      <button onClick={handleSubir} disabled={!archivo || cargando}>
-        {cargando ? 'Subiendo...' : 'Subir archivo'}
-      </button>
-
-      {respuesta && (
-        <div>
-          <p> {respuesta.mensaje}</p>
-          <p> Archivo: {respuesta.nombre_archivo}</p>
-          <p> Tamaño: {respuesta.tamaño_bytes} bytes</p>
-          <p> Líneas: {respuesta.lineas}</p>
+      {error && (
+        <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#ffd7d7', color: '#a00', borderRadius: '5px' }}>
+          <strong>❌ {error}</strong>
         </div>
       )}
 
-      {error && <p> {error}</p>}
+      {respuesta && (
+        <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#d7ffd7', color: '#007a00', borderRadius: '5px' }}>
+          <strong>✅ {respuesta.mensaje}</strong>
+          <p>Archivo: {respuesta.nombre_archivo}</p>
+          <p>Líneas: {respuesta.lineas}</p>
+        </div>
+      )}
     </div>
   )
 }
