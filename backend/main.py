@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import re
+from logic import procesar_chat_whatsapp
 
 app = FastAPI()
 
@@ -65,8 +66,11 @@ async def upload_file(file: UploadFile = File(...)):
         )
 
     print("✅ Archivo válido.")
+    #dejo la funcion comentada por si necesitan corroborar algo del dataFrame
+    #df_resultado = procesar_chat_whatsapp(texto) #el procesar_chat_whatsapp devuelve un dataframe con las columnas: Fecha, Hora, Miembro y Mensaje
     return {
         "nombre_archivo": file.filename,
         "lineas": len(texto.splitlines()),
-        "mensaje": "¡Chat validado con éxito!"
+        "mensaje": "¡Chat validado con éxito!",
+        #"dataframe": df_resultado.to_dict(orient='records')  # Convertimos el DataFrame a una lista de diccionarios
     }
