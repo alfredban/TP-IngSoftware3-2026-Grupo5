@@ -6,22 +6,6 @@ import numpy as np
 import datetime as dt
 import re
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  ##verifica el macht con el patron de fecha y hora al inicio de cada linea del txt 
 def IniciaConFechaYHora(s):
     
@@ -39,12 +23,12 @@ def IniciaConFechaYHora(s):
 # Patron para encontrar a los miembros del grupo dentro del txt
 def EncontrarMiembro(s):
     patrones = [
-        r'([\w]+):',                                    # Nombre
-        r'([\w]+[\s]+[\(]+[\w]+[\)]+):',      # Nombre (Apodo)
-        r'([\w]+[\s]+[\w]+):',                    # Nombre + Apellido
-        r'([\w]+[\s]+[\w]+[\s]+[\w]+):',    # Nombre 1 + Nombre 2 + Apellido
-        r'([+]\d{1,3}[\s\d\-\(\)]{8,15}):',     # Número de teléfono (en teoria deberia de cubrir almenos latinoamerica)
-        r'([\w]+)[\u263a-\U0001f999]+:', # Nombre + Emoji            
+        r'([\w]+):',                                 # Nombre
+        r'([\w]+[\s]+[\(]+[\w]+[\)]+):',             # Nombre (Apodo)
+        r'([\w]+[\s]+[\w]+):',                       # Nombre + Apellido
+        r'([\w]+[\s]+[\w]+[\s]+[\w]+):',             # Nombre 1 + Nombre 2 + Apellido
+        r'([+]\d{1,3}[\s\d\-\(\)]{8,15}):',          # Número de teléfono (en teoria deberia de cubrir almenos latinoamerica)
+        r'([\w]+)[\u263a-\U0001f999]+:',             # Nombre + Emoji            
     ]
     patron = '^' + '|'.join(patrones)     
     resultado = re.match(patron, s)  # Verificar si cada línea del txt hace match con el patrón de miembro
@@ -53,8 +37,7 @@ def EncontrarMiembro(s):
     return False
   
 
-
-#split [0] = todo a la izquierda del primer guion, split [1] = todo a la derecha del primer guion
+# split [0] = todo a la izquierda del primer guion, split [1] = todo a la derecha del primer guion
 # basicamente vamos partiendo la linea en partes, primero por el guion, luego por el espacio, luego por los dos puntos,
 # etc. para obtener cada parte de la linea del txt
 # Separar las partes de cada línea del txt: Fecha, Hora, Miembro y Mensaje
@@ -63,13 +46,13 @@ def ObtenerPartes(linea):
     splitLinea = linea.split(' - ') 
     FechaHora = splitLinea[0]                     # '21/2/2021 11:27 a. m.'
     splitFechaHora = FechaHora.split(' ')   
-    Fecha = splitFechaHora[0]                    # '21/2/2021'
-    Hora = ' '.join(splitFechaHora[1:])          # '11:27 a. m.'
-    Mensaje = ' '.join(splitLinea[1:])             # 'Sandro: Todos debemos aprender a analizar datos'
+    Fecha = splitFechaHora[0]                     # '21/2/2021'
+    Hora = ' '.join(splitFechaHora[1:])           # '11:27 a. m.'
+    Mensaje = ' '.join(splitLinea[1:])            # 'Sandro: Todos debemos aprender a analizar datos'
     if EncontrarMiembro(Mensaje): 
         splitMensaje = Mensaje.split(': ')      
-        Miembro = splitMensaje[0]               # 'Sandro' 
-        Mensaje = ' '.join(splitMensaje[1:])    # 'Todos debemos aprender a analizar datos'
+        Miembro = splitMensaje[0]                 # 'Sandro' 
+        Mensaje = ' '.join(splitMensaje[1:])      # 'Todos debemos aprender a analizar datos'
     else:
         Miembro = None
     return Fecha, Hora, Miembro, Mensaje
@@ -104,7 +87,7 @@ def procesar_chat_whatsapp(texto_completo):
             # Es un salto de línea del mensaje anterior
             VerificarMensaje.append(linea)
             
-    # No te olvides de guardar el último mensaje del archivo
+    # verificamos el último mensaje del archivo
     if len(VerificarMensaje) > 0:
         DatosLista.append([Fecha, Hora, Miembro, ' '.join(VerificarMensaje)])
         
