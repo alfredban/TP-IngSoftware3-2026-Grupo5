@@ -94,7 +94,7 @@ def procesar_chat_whatsapp(texto_completo):
     # Crear DataFrame
     df = pd.DataFrame(DatosLista, columns=['Fecha', 'Hora', 'Miembro', 'Mensaje'])
     
-    # Limpieza de datos (como tenías en tu imagen)
+    # Limpieza de datos
     # Intentamos convertir la fecha (añado dayfirst=True por si acaso)
     df['Fecha'] = pd.to_datetime(df['Fecha'], dayfirst=True, errors='coerce')
     df['Fecha'] = df['Fecha'].dt.strftime('%d/%m/%Y')
@@ -102,3 +102,13 @@ def procesar_chat_whatsapp(texto_completo):
     df.reset_index(drop=True, inplace=True)
     
     return df
+
+def obtener_ranking_mensajes(df):
+    # Filtramos los mensajes del sistema (Miembro = None o mensajes automáticos)
+    df_filtrado = df[df['Miembro'].notna()].copy()
+    
+    # Se cuentan los mensajes de cada miembro
+    conteo = df_filtrado['Miembro'].value_counts().reset_index()
+    conteo.columns = ['miembro', 'cantidad_mensajes']
+    
+    return conteo

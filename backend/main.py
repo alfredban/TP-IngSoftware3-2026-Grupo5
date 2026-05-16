@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import re
-from logic import procesar_chat_whatsapp
+from logic import procesar_chat_whatsapp, obtener_ranking_mensajes
 
 app = FastAPI()
 
@@ -74,3 +74,21 @@ async def upload_file(file: UploadFile = File(...)):
         "mensaje": "¡Chat validado con éxito!",
         #"dataframe": df_resultado.to_dict(orient='records')  # Convertimos el DataFrame a una lista de diccionarios
     }
+    
+@app.post("/api/stats/top-senders")
+async def top_senders(file: UploadFile = File(...)):
+    contenido = await file.read()
+    
+    for encoding in ["utf-8-sig", "utf-8", "latin-1"]:
+        try:
+            texto = contenido.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        raise HTTPException(status_code=400, detail="No se pudo leer el archivo.")
+
+    df = procesar_chat_whatsapp(texto)
+    ranking = obtener_ranking_mensajes(df)
+    
+    return ranking.to_dict(orient='records')
