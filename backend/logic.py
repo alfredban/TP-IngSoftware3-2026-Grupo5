@@ -1,3 +1,5 @@
+from collections import Counter
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -112,3 +114,19 @@ def obtener_ranking_mensajes(df):
     conteo.columns = ['miembro', 'cantidad_mensajes']
     
     return conteo
+
+
+def emogiMasUsado(df:pd.DataFrame, texto:str ="Mensaje"):
+    all_emojis = []     #lista para guardar todos los emojis del dataframe
+    for mensaje in df[texto].dropna().astype(str):
+        for em in emoji.analyze(mensaje):
+            all_emojis.append(em.chars)
+
+    if not all_emojis:
+        return {"emoji": None, "cantidad": 0}
+    
+    contador = Counter(all_emojis)  # Contamos la frecuencia de cada emoji
+    
+    masUsado = contador.most_common(1)[0]  # Devuelve una tupla (emoji, cantidad)
+
+    return {"emoji": masUsado[0], "cantidad": masUsado[1]}

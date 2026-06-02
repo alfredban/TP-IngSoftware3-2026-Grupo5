@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import re
-from logic import procesar_chat_whatsapp, obtener_ranking_mensajes
+from logic import procesar_chat_whatsapp, obtener_ranking_mensajes, emogiMasUsado
 
 app = FastAPI()
 
@@ -92,3 +92,23 @@ async def top_senders(file: UploadFile = File(...)):
     ranking = obtener_ranking_mensajes(df)
     
     return ranking.to_dict(orient='records')
+
+# Endpoint para realizar test
+@app.post("/api/most-used-emoji-test")
+async def upload_file(file: UploadFile = File(...)):
+    print(f"--- Procesando: {file.filename} ---")
+    
+    if not file.filename.endswith('.txt'):
+        raise HTTPException(status_code=400, detail="El archivo debe ser .txt")
+    
+    #  lee el archivo
+    contenido_bytes = await file.read()
+    contenido_texto = contenido_bytes.decode("utf-8")
+    #filtramos el chat para que el end point funcione 
+    df_whatsapp = procesar_chat_whatsapp(contenido_texto)
+    resultado_emoji = emogiMasUsado(df_whatsapp)
+    
+    return {
+        "status": "success",
+        "data": resultado_emoji
+    }
