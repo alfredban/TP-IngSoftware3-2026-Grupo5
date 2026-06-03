@@ -1,8 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import re
-from logic import procesar_chat_whatsapp, obtener_ranking_mensajes, emogiMasUsado, obtener_mensajes_por_hora
-
+from logic import procesar_chat_whatsapp, obtener_ranking_mensajes, emogiMasUsado, obtener_mensajes_por_hora, obtener_dias_con_mas_mensajes
 app = FastAPI()
 
 app.add_middleware(
@@ -128,3 +127,22 @@ async def messages_per_hour(file: UploadFile = File(...)):
     
     except Exception as e:
         return {"error": str(e)}
+    
+    
+@app.post("/api/stats/top-days")
+async def top_days(file: UploadFile = File(...)):
+    contenido = await file.read()
+    
+    for encoding in ["utf-8-sig", "utf-8", "latin-1"]:
+        try:
+            texto = contenido.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        raise HTTPException(status_code=400, detail="No se pudo leer el archivo.")
+    
+    df = procesar_chat_whatsapp(texto)
+    resultado = obtener_dias_con_mas_mensajes(df)
+    
+    return {"top_days": resultado}
