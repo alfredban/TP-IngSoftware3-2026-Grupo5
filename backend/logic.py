@@ -171,3 +171,19 @@ def obtener_mensajes_por_hora(df: pd.DataFrame):
         resultado.append({"hour": f"{i}h", "messages": int(promedio)})
     
     return resultado
+
+def obtener_dias_con_mas_mensajes(df: pd.DataFrame):
+    if df.empty:
+        return []
+    
+    # Filtramos mensajes del sistema (sin miembro asignado)
+    df_filtrado = df[df['Miembro'].notna()].copy()
+    
+    # Contamos cuántos mensajes hubo por cada fecha
+    conteo_por_dia = df_filtrado.groupby('Fecha').size().reset_index(name='cantidad_mensajes')
+    
+    # Ordenamos de mayor a menor
+    conteo_por_dia = conteo_por_dia.sort_values('cantidad_mensajes', ascending=False)
+    
+    # Convertimos a lista de diccionarios para devolver como JSON
+    return conteo_por_dia.to_dict(orient='records')
