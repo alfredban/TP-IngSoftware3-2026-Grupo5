@@ -130,3 +130,44 @@ def emogiMasUsado(df:pd.DataFrame, texto:str ="Mensaje"):
     masUsado = contador.most_common(1)[0]  # Devuelve una tupla (emoji, cantidad)
 
     return {"emoji": masUsado[0], "cantidad": masUsado[1]}
+
+def obtener_mensajes_por_hora(df: pd.DataFrame):
+    if df.empty:
+        return [{"hour": f"{i}h", "messages": 0} for i in range(24)]
+    
+    df_copy = df.copy()
+    
+    # Función auxiliar para convertir la hora a formato 24hs
+    def extraer_hora(hora_str):
+        hora_str = str(hora_str).lower()
+        match = re.search(r'(\d{1,2}):\d{2}', hora_str)
+        if not match:
+            return 0
+        h = int(match.group(1))
+        if 'p' in hora_str and 'm' in hora_str:
+            if h < 12:
+                h += 12
+        elif 'a' in hora_str and 'm' in hora_str:
+            if h == 12:
+                h = 0
+        return h
+    
+    # Aplica la función para obtener la hora en formato 24hs
+    df_copy['hour_24'] = df_copy['Hora'].apply(extraer_hora)
+    
+    # Obtener la cantidad de días únicos en los que hubo mensajes
+    dias_unicos = df_copy['Fecha'].nunique()
+    if dias_unicos == 0:
+        dias_unicos = 1
+
+    # Contar la cantidad de mensajes que se enviaron en cada hora a nivel general
+    conteo_por_hora = df_copy.groupby('hour_24').size()
+
+    # Array de 24 elementos (uno por cada hora del día)
+    resultado = []
+    for i in range(24):
+        total_mensajes = conteo_por_hora.get(i,0)
+        promedio = round(total_mensajes / dias_unicos)
+        resultado.append({"hour": f"{i}h", "messages": int(promedio)})
+    
+    return resultado

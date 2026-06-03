@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import re
-from logic import procesar_chat_whatsapp, obtener_ranking_mensajes, emogiMasUsado
+from logic import procesar_chat_whatsapp, obtener_ranking_mensajes, emogiMasUsado, obtener_mensajes_por_hora
 
 app = FastAPI()
 
@@ -112,3 +112,19 @@ async def upload_file(file: UploadFile = File(...)):
         "status": "success",
         "data": resultado_emoji
     }
+
+
+@app.post("/api/stats/messages-per-hour")
+async def messages_per_hour(file: UploadFile = File(...)):
+    try:
+        content = await file.read()
+        decoded_content = content.decode('utf-8')
+
+        df = procesar_chat_whatsapp(decoded_content)
+        
+        resultado = obtener_mensajes_por_hora(df)
+        
+        return {"messages_by_hour": resultado}
+    
+    except Exception as e:
+        return {"error": str(e)}
