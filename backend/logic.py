@@ -7,6 +7,8 @@ import emoji
 import numpy as np
 import datetime as dt
 import re
+from collections import Counter
+from stopwords import STOP_WORDS_ES # Importamos nuestra lista de palabras vacías
 
  ##verifica el macht con el patron de fecha y hora al inicio de cada linea del txt 
 def IniciaConFechaYHora(s):
@@ -187,3 +189,38 @@ def obtener_dias_con_mas_mensajes(df: pd.DataFrame):
     
     # Convertimos a lista de diccionarios para devolver como JSON
     return conteo_por_dia.to_dict(orient='records')
+
+def obtener_frecuencia_palabras(df, limite_palabras: int = 50):
+    # Toma un DataFrame con los datos de Whatsapp, extrae los mensajes, limia el texto,
+    # filtra las stopwords y devuelve un array con el top `limite_palabras` mas usadas
+
+    # Unir todos los mensajes en un solo string gigante
+    todos_los_mensajes = " ".join (df['Mensaje'].astype(str).to_list())
+
+    # Convertir a minúsculas
+    texto_limpio = todos_los_mensajes.lower()
+
+    # Eliminar URLs
+    texto_limpio = re.sub(r'https?://\S+|www\.\S+', '', texto_limpio)
+
+    # Eliminar menciones
+    texto_limpio = re.sub(r'@\w+', '', texto_limpio)
+
+    # Extraer solo palabras estrictamente alfabéticas (elimina: emojis, números, símbolos y guiones bajos)
+    palabras = re.findall(r'[^\W\d_]+', texto_limpio)
+
+    # Filtrar las palabras que estan incluidas en el archivo stopwords.py
+    palabras_filtradas = [p for p in palabras if p not in STOP_WORDS_ES and len(p)>2]
+
+    # Contar la frecuencia de cada palabra
+    contador_palabras = Counter(palabras_filtradas)
+
+    # Obtener las palabras mas usadas
+    top_palabras = contador_palabras.most_common(limite_palabras)
+
+    # Formatear la respuesta
+    worldcloud_data = [
+        {"word": palabra, "frecuency": frecuencia} for palabra, frecuencia in top_palabras
+    ]
+
+    return worldcloud_data
