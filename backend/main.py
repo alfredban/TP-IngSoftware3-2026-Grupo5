@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import re
-from logic import procesar_chat_whatsapp, obtener_ranking_mensajes, emogiMasUsado, obtener_mensajes_por_hora, obtener_dias_con_mas_mensajes
+from logic import procesar_chat_whatsapp, obtener_ranking_mensajes, emogiMasUsado, obtener_mensajes_por_hora, obtener_dias_con_mas_mensajes, obtener_frecuencia_palabras
 app = FastAPI()
 
 app.add_middleware(
@@ -146,3 +146,32 @@ async def top_days(file: UploadFile = File(...)):
     resultado = obtener_dias_con_mas_mensajes(df)
     
     return {"top_days": resultado}
+
+
+@app.post("/api/stats/wordcloud")
+async def wordcloud(
+    file: UploadFile = File(...), 
+    limit: int = 50 # Parámetro fácilmente ajustable
+):
+    contenido = await file.read()
+    
+    # Misma lógica de lectura de archivos que ya tienes...
+    for encoding in ["utf-8-sig", "utf-8", "latin-1"]:
+        try:
+            texto = contenido.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        raise HTTPException(status_code=400, detail="No se pudo leer el archivo.")
+
+    # Generamos el dataframe
+    df = procesar_chat_whatsapp(texto)
+    
+    # Obtenemos la data de la nube de palabras enviándole el parámetro "limit"
+    # que puede llegar desde el frontend
+    resultado_wordcloud = obtener_frecuencia_palabras(df, limite_palabras=limit)
+    
+    return {
+        "wordcloud_data": resultado_wordcloud
+    }
