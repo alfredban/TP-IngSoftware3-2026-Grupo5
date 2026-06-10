@@ -1,17 +1,17 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
-import Upload from './pages/Upload'
-import './css/App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Dashboard, Upload } from './pages'
+import './index.css'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Cuando el usuario esté en la raíz (/), muestra el componente Home */}
-        <Route path="/" element={<Home />} />
-        
-        <Route path="/" element={<Home />} />
+        {/* Cuando el usuario esté en la raíz (/), redirige al usuario a /upload por defecto */}
+        <Route path="/" element={<Navigate to="/upload" replace />} />
+
+        {/* Rutas de la aplicación */}
         <Route path="/upload" element={<Upload />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   )
