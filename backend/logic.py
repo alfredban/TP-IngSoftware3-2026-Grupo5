@@ -174,21 +174,26 @@ def obtener_mensajes_por_hora(df: pd.DataFrame):
     
     return resultado
 
-def obtener_dias_con_mas_mensajes(df: pd.DataFrame):
+def obtener_mensajes_por_dia_semana(df: pd.DataFrame):
     if df.empty:
         return []
     
-    # Filtramos mensajes del sistema (sin miembro asignado)
     df_filtrado = df[df['Miembro'].notna()].copy()
     
-    # Contamos cuántos mensajes hubo por cada fecha
-    conteo_por_dia = df_filtrado.groupby('Fecha').size().reset_index(name='cantidad_mensajes')
+    # Convertimos la columna Fecha a datetime para poder sacar el día de la semana
+    df_filtrado['Fecha_dt'] = pd.to_datetime(df_filtrado['Fecha'], dayfirst=True, errors='coerce')
+    
+    # Sacamos el nombre del dia en español
+    dias_es = {0: 'Lunes', 1: 'Martes', 2: 'Miércoles', 3: 'Jueves', 4: 'Viernes', 5: 'Sábado', 6: 'Domingo'}
+    df_filtrado['dia_semana'] = df_filtrado['Fecha_dt'].dt.dayofweek.map(dias_es)
+    
+    # Contamos mensajes por dia de la semana
+    conteo = df_filtrado.groupby('dia_semana').size().reset_index(name='cantidad_mensajes')
     
     # Ordenamos de mayor a menor
-    conteo_por_dia = conteo_por_dia.sort_values('cantidad_mensajes', ascending=False)
+    conteo = conteo.sort_values('cantidad_mensajes', ascending=False)
     
-    # Convertimos a lista de diccionarios para devolver como JSON
-    return conteo_por_dia.to_dict(orient='records')
+    return conteo.to_dict(orient='records')
 
 def obtener_frecuencia_palabras(df, limite_palabras: int = 50):
     # Toma un DataFrame con los datos de Whatsapp, extrae los mensajes, limia el texto,
