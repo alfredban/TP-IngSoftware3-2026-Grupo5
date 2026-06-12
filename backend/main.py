@@ -1,8 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import re
-from logic import procesar_chat_whatsapp, obtener_ranking_mensajes
-
+from logic import procesar_chat_whatsapp, obtener_ranking_mensajes, emogiMasUsado, obtener_mensajes_por_hora, obtener_mensajes_por_dia_semana, obtener_frecuencia_palabras
 app = FastAPI()
 
 app.add_middleware(
@@ -92,3 +91,87 @@ async def top_senders(file: UploadFile = File(...)):
     ranking = obtener_ranking_mensajes(df)
     
     return ranking.to_dict(orient='records')
+
+# Endpoint para realizar test
+@app.post("/api/most-used-emoji-test")
+async def upload_file(file: UploadFile = File(...)):
+    print(f"--- Procesando: {file.filename} ---")
+    
+    if not file.filename.endswith('.txt'):
+        raise HTTPException(status_code=400, detail="El archivo debe ser .txt")
+    
+    #  lee el archivo
+    contenido_bytes = await file.read()
+    contenido_texto = contenido_bytes.decode("utf-8")
+    #filtramos el chat para que el end point funcione 
+    df_whatsapp = procesar_chat_whatsapp(contenido_texto)
+    resultado_emoji = emogiMasUsado(df_whatsapp)
+    
+    return {
+        "status": "success",
+        "data": resultado_emoji
+    }
+
+
+@app.post("/api/stats/messages-per-hour")
+async def messages_per_hour(file: UploadFile = File(...)):
+    try:
+        content = await file.read()
+        decoded_content = content.decode('utf-8')
+
+        df = procesar_chat_whatsapp(decoded_content)
+        
+        resultado = obtener_mensajes_por_hora(df)
+        
+        return {"messages_by_hour": resultado}
+    
+    except Exception as e:
+        return {"error": str(e)}
+    
+    
+@app.post("/api/stats/messages-per-weekday")
+async def messages_per_weekday(file: UploadFile = File(...)):
+    contenido = await file.read()
+    
+    for encoding in ["utf-8-sig", "utf-8", "latin-1"]:
+        try:
+            texto = contenido.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        raise HTTPException(status_code=400, detail="No se pudo leer el archivo.")
+    
+    df = procesar_chat_whatsapp(texto)
+    resultado = obtener_mensajes_por_dia_semana(df)
+    
+    return {"messages_per_weekday": resultado}
+
+
+@app.post("/api/stats/wordcloud")
+async def wordcloud(
+    file: UploadFile = File(...), 
+    limit: int = 50 # Parámetro fácilmente ajustable
+):
+    contenido = await file.read()
+    
+    # Misma lógica de lectura de archivos que ya tienes...
+    for encoding in ["utf-8-sig", "utf-8", "latin-1"]:
+        try:
+            texto = contenido.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        raise HTTPException(status_code=400, detail="No se pudo leer el archivo.")
+
+    # Generamos el dataframe
+    df = procesar_chat_whatsapp(texto)
+    
+    # Obtenemos la data de la nube de palabras enviándole el parámetro "limit"
+    # que puede llegar desde el frontend
+    resultado_wordcloud = obtener_frecuencia_palabras(df, limite_palabras=limit)
+    
+    return {
+        "wordcloud_data": resultado_wordcloud
+    }

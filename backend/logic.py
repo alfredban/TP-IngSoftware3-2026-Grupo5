@@ -1,3 +1,5 @@
+from collections import Counter
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -5,6 +7,8 @@ import emoji
 import numpy as np
 import datetime as dt
 import re
+from collections import Counter
+from stopwords import STOP_WORDS_ES # Importamos nuestra lista de palabras vacías
 
  ##verifica el macht con el patron de fecha y hora al inicio de cada linea del txt 
 def IniciaConFechaYHora(s):
@@ -112,3 +116,116 @@ def obtener_ranking_mensajes(df):
     conteo.columns = ['miembro', 'cantidad_mensajes']
     
     return conteo
+
+
+def emogiMasUsado(df:pd.DataFrame, texto:str ="Mensaje"):
+    all_emojis = []     #lista para guardar todos los emojis del dataframe
+    for mensaje in df[texto].dropna().astype(str):
+        for em in emoji.analyze(mensaje):
+            all_emojis.append(em.chars)
+
+    if not all_emojis:
+        return {"emoji": None, "cantidad": 0}
+    
+    contador = Counter(all_emojis)  # Contamos la frecuencia de cada emoji
+    
+    masUsado = contador.most_common(1)[0]  # Devuelve una tupla (emoji, cantidad)
+
+    return {"emoji": masUsado[0], "cantidad": masUsado[1]}
+
+def obtener_mensajes_por_hora(df: pd.DataFrame):
+    if df.empty:
+        return [{"hour": f"{i}h", "messages": 0} for i in range(24)]
+    
+    df_copy = df.copy()
+    
+    # Función auxiliar para convertir la hora a formato 24hs
+    def extraer_hora(hora_str):
+        hora_str = str(hora_str).lower()
+        match = re.search(r'(\d{1,2}):\d{2}', hora_str)
+        if not match:
+            return 0
+        h = int(match.group(1))
+        if 'p' in hora_str and 'm' in hora_str:
+            if h < 12:
+                h += 12
+        elif 'a' in hora_str and 'm' in hora_str:
+            if h == 12:
+                h = 0
+        return h
+    
+    # Aplica la función para obtener la hora en formato 24hs
+    df_copy['hour_24'] = df_copy['Hora'].apply(extraer_hora)
+    
+    # Obtener la cantidad de días únicos en los que hubo mensajes
+    dias_unicos = df_copy['Fecha'].nunique()
+    if dias_unicos == 0:
+        dias_unicos = 1
+
+    # Contar la cantidad de mensajes que se enviaron en cada hora a nivel general
+    conteo_por_hora = df_copy.groupby('hour_24').size()
+
+    # Array de 24 elementos (uno por cada hora del día)
+    resultado = []
+    for i in range(24):
+        total_mensajes = conteo_por_hora.get(i,0)
+        promedio = round(total_mensajes / dias_unicos)
+        resultado.append({"hour": f"{i}h", "messages": int(promedio)})
+    
+    return resultado
+
+def obtener_mensajes_por_dia_semana(df: pd.DataFrame):
+    if df.empty:
+        return []
+    
+    df_filtrado = df[df['Miembro'].notna()].copy()
+    
+    # Convertimos la columna Fecha a datetime para poder sacar el día de la semana
+    df_filtrado['Fecha_dt'] = pd.to_datetime(df_filtrado['Fecha'], dayfirst=True, errors='coerce')
+    
+    # Sacamos el nombre del dia en español
+    dias_es = {0: 'Lunes', 1: 'Martes', 2: 'Miércoles', 3: 'Jueves', 4: 'Viernes', 5: 'Sábado', 6: 'Domingo'}
+    df_filtrado['dia_semana'] = df_filtrado['Fecha_dt'].dt.dayofweek.map(dias_es)
+    
+    # Contamos mensajes por dia de la semana
+    conteo = df_filtrado.groupby('dia_semana').size().reset_index(name='cantidad_mensajes')
+    
+    # Ordenamos de mayor a menor
+    conteo = conteo.sort_values('cantidad_mensajes', ascending=False)
+    
+    return conteo.to_dict(orient='records')
+
+def obtener_frecuencia_palabras(df, limite_palabras: int = 50):
+    # Toma un DataFrame con los datos de Whatsapp, extrae los mensajes, limia el texto,
+    # filtra las stopwords y devuelve un array con el top `limite_palabras` mas usadas
+
+    # Unir todos los mensajes en un solo string gigante
+    todos_los_mensajes = " ".join (df['Mensaje'].astype(str).to_list())
+
+    # Convertir a minúsculas
+    texto_limpio = todos_los_mensajes.lower()
+
+    # Eliminar URLs
+    texto_limpio = re.sub(r'https?://\S+|www\.\S+', '', texto_limpio)
+
+    # Eliminar menciones
+    texto_limpio = re.sub(r'@\w+', '', texto_limpio)
+
+    # Extraer solo palabras estrictamente alfabéticas (elimina: emojis, números, símbolos y guiones bajos)
+    palabras = re.findall(r'[^\W\d_]+', texto_limpio)
+
+    # Filtrar las palabras que estan incluidas en el archivo stopwords.py
+    palabras_filtradas = [p for p in palabras if p not in STOP_WORDS_ES and len(p)>2]
+
+    # Contar la frecuencia de cada palabra
+    contador_palabras = Counter(palabras_filtradas)
+
+    # Obtener las palabras mas usadas
+    top_palabras = contador_palabras.most_common(limite_palabras)
+
+    # Formatear la respuesta
+    worldcloud_data = [
+        {"word": palabra, "frecuency": frecuencia} for palabra, frecuencia in top_palabras
+    ]
+
+    return worldcloud_data
