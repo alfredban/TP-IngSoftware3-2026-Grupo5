@@ -1,5 +1,6 @@
-import { useLocation, Navigate } from 'react-router-dom';
-
+import { useLocation, Navigate } from 'react-router-dom'
+import TopSender from '../../components/TopSender/TopSender';
+import TopEmoji from '../../components/TopEmoji/TopEmoji';
 const Dashboard = () => {
     const location = useLocation();
 
@@ -11,7 +12,10 @@ const Dashboard = () => {
         return <Navigate to="/upload" replace />;
     }
 
-    return (
+    return (    
+
+        <div>
+
         <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
             <h1 className="h1">Dashboard de Análisis</h1>
 
@@ -36,7 +40,23 @@ const Dashboard = () => {
                     {JSON.stringify(backendData, null, 2)}
                 </pre>
             </div>
+
         </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap', padding: '0 2rem' }}>
+
+                  <div>
+                    <TopSender data={backendData.metrics.top_sender} />
+                  </div>
+
+
+                  <div>
+                    <TopEmoji data={backendData.metrics.top_emoji} />
+                  </div>
+
+                </div>
+        </div>        
+
     );
 };
 
