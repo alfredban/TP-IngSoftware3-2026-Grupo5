@@ -1,6 +1,7 @@
 import { useLocation, Navigate } from 'react-router-dom'
 import TopSender from '../../components/TopSender/TopSender';
 import TopEmoji from '../../components/TopEmoji/TopEmoji';
+import TopDays from '../../components/TopDays/TopDays';
 const Dashboard = () => {
     const location = useLocation();
 
@@ -54,6 +55,10 @@ const Dashboard = () => {
                     <TopEmoji data={backendData.metrics.top_emoji} />
                   </div>
 
+                  <div>
+                    <TopDays data={backendData.metrics.messages_by_day_of_week} />
+                  </div>
+
                 </div>
         </div>        
 
@@ -61,3 +66,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

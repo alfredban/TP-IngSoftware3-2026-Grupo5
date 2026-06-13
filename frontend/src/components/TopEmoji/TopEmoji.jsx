@@ -1,4 +1,4 @@
-import react from 'React';
+import react from 'react';
 import styles from './TopEmoji.module.css';
 
 const TopEmoji = ({ data }) => {
