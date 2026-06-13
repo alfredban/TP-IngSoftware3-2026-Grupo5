@@ -2,6 +2,8 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import re
+import zipfile
+import io
 from logic import (
     procesar_chat_whatsapp, 
     obtener_ranking_mensajes, 
@@ -54,10 +56,22 @@ def es_formato_whatsapp_valido(texto: str) -> bool:
 async def upload_file(file: UploadFile = File(...)):
     print(f"--- Procesando: {file.filename} ---")
 
-    if not file.filename.endswith('.txt'):
-        return generar_respuesta_error("Formato inválido", "El archivo debe ser .txt")
+    if not (file.filename.endswith('.txt') or file.filename.endswith('.zip')):
+        return generar_respuesta_error("Formato inválido", "El archivo debe ser .txt o .zip")
 
     contenido = await file.read()
+    
+    if file.filename.endswith('.zip'):
+        try:
+            with zipfile.ZipFile(io.BytesIO(contenido)) as z:
+                archivos_txt = [nombre for nombre in z.namelist() if nombre.endswith('.txt')]
+                if not archivos_txt:
+                    return generar_respuesta_error("Formato inválido", "El archivo ZIP no contiene ningún archivo de chat .txt")
+                
+                with z.open(archivos_txt[0]) as chat_file:
+                    contenido = chat_file.read()
+        except zipfile.BadZipFile:
+            return generar_respuesta_error("Formato inválido", "El archivo ZIP está corrupto o no se puede leer")
     
     for encoding in ["utf-8-sig", "utf-8", "latin-1"]:
         try:
@@ -97,10 +111,13 @@ async def upload_file(file: UploadFile = File(...)):
         # 6. Nube de palabras
         wordcloud_data = obtener_frecuencia_palabras(df)
 
+        # Determinamos dinámicamente el tipo original subido
+        tipo_archivo = "zip" if file.filename.endswith('.zip') else "txt"
+
         return {
             "filename": file.filename,
             "file_size": len(contenido),
-            "file_type": "txt",
+            "file_type": tipo_archivo,
             "metrics": {
                 "total_messages": total_mensajes,
                 "top_sender": top_sender,
