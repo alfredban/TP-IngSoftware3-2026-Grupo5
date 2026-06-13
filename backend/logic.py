@@ -163,8 +163,7 @@ def obtener_mensajes_por_hora(df: pd.DataFrame):
     return resultado
 
 def obtener_mensajes_por_dia_semana(df: pd.DataFrame):
-    # CORRECCIÓN: Plantilla estricta de 7 días para mantener la integridad del Eje X
-    dias_orden = ['Lun', 'Mar', 'Mier', 'Jue', 'Vie', 'Sab', 'Dom']
+    dias_orden = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']
     resultado_base = {dia: 0 for dia in dias_orden}
     
     if not df.empty:
@@ -173,22 +172,19 @@ def obtener_mensajes_por_dia_semana(df: pd.DataFrame):
         if not df_filtrado.empty:
             df_filtrado['Fecha_dt'] = pd.to_datetime(df_filtrado['Fecha'], dayfirst=True, errors='coerce')
             
-            # Mapeo a los nombres cortos que pide exactamente el JSON
-            dias_es = {0: 'Lun', 1: 'Mar', 2: 'Mier', 3: 'Jue', 4: 'Vie', 5: 'Sab', 6: 'Dom'}
+            dias_es = {0: 'Lunes', 1: 'Martes', 2: 'Miercoles', 3: 'Jueves', 4: 'Viernes', 5: 'Sabado', 6: 'Domingo'}
             df_filtrado['dia_semana'] = df_filtrado['Fecha_dt'].dt.dayofweek.map(dias_es)
             
             conteo = df_filtrado.groupby('dia_semana').size()
             
-            # Calculamos las semanas únicas para sacar el promedio (como pide tu consigna nueva)
             semanas_unicas = df_filtrado['Fecha_dt'].dt.isocalendar().week.nunique()
             if semanas_unicas == 0:
                 semanas_unicas = 1
                 
-            # Actualizamos el valor de los días que sí tuvieron mensajes
             for dia, cantidad in conteo.items():
-                resultado_base[dia] = int(round(cantidad / semanas_unicas))
+                if dia in resultado_base:
+                    resultado_base[dia] = int(round(cantidad / semanas_unicas))
                 
-    # Transformamos el diccionario en la lista exacta que espera el endpoint
     resultado = [{"day": dia, "messages": cantidad} for dia, cantidad in resultado_base.items()]
     
     return resultado
