@@ -163,7 +163,7 @@ def obtener_mensajes_por_hora(df: pd.DataFrame):
     return resultado
 
 def obtener_mensajes_por_dia_semana(df: pd.DataFrame):
-    dias_orden = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']
+    dias_orden = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom']
     resultado_base = {dia: 0 for dia in dias_orden}
     
     if not df.empty:
@@ -172,7 +172,7 @@ def obtener_mensajes_por_dia_semana(df: pd.DataFrame):
         if not df_filtrado.empty:
             df_filtrado['Fecha_dt'] = pd.to_datetime(df_filtrado['Fecha'], dayfirst=True, errors='coerce')
             
-            dias_es = {0: 'Lunes', 1: 'Martes', 2: 'Miercoles', 3: 'Jueves', 4: 'Viernes', 5: 'Sabado', 6: 'Domingo'}
+            dias_es = {0: 'Lun', 1: 'Mar', 2: 'Mie', 3: 'Jue', 4: 'Vie', 5: 'Sab', 6: 'Dom'}
             df_filtrado['dia_semana'] = df_filtrado['Fecha_dt'].dt.dayofweek.map(dias_es)
             
             conteo = df_filtrado.groupby('dia_semana').size()
