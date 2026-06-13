@@ -64,39 +64,29 @@ const FileUploader = () => {
         else return (bytes / 1048576).toFixed(1) + ' MB';
     };
 
-    const handleAnalyze = () => {
+    const handleAnalyze = async () => {
+        const formData = new FormData();
+        formData.append('file', file);
 
-        // TODO: Crear el fetch al backend y pasarle el file, recibir la data, comprobar errores y luego navegar al dashboard
+        try {
+            const res = await fetch('http://localhost:8000/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
 
-        // Simulamos la respuesta exacta que traería el backend
-        const mockBackendResponse = {
-            filename: file.name,
-            file_size: file.size,
-            file_type: file.name.endsWith('.zip') ? "zip" : "txt",
-            metrics: {
-                total_messages: 15420,
-                top_sender: "Juan",
-                top_emoji: "😂",
-                messages_by_hour: [
-                    { hour: "18h", messages: 1200 },
-                    { hour: "19h", messages: 1500 },
-                    { hour: "20h", messages: 3200 }
-                ],
-                messages_by_day_of_week: [
-                    { day: "Vie", messages: 2400 },
-                    { day: "Sab", messages: 4500 },
-                    { day: "Dom", messages: 3100 }
-                ],
-                wordcloud_data: [
-                    { word: "jaja", frecuency: 850 },
-                    { word: "hola", frecuency: 420 },
-                    { word: "gracias", frecuency: 310 }
-                ]
-            },
-            errors: []
-        };
+            const data = await res.json();
 
-        navigate('/dashboard', { state: mockBackendResponse });
+            if (!res.ok || data.errors?.length > 0) {
+                const mensajeError = data.errors?.[0]?.info || 'Error al procesar el archivo';
+                setErrorModal({ isOpen: true, message: mensajeError });
+                return;
+            }
+
+            navigate('/dashboard', { state: data });
+
+        } catch (err) {
+            setErrorModal({ isOpen: true, message: 'No se pudo conectar con el servidor. Verificá que el backend esté corriendo.' });
+        }
     };
 
 
