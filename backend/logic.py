@@ -20,7 +20,7 @@ def EncontrarMiembro(s):
     return ': ' in s
 
 def ObtenerPartes(linea):
-    linea_limpia = linea.encode('ascii', 'ignore').decode('ascii')
+    linea_limpia = linea.replace('\u200e', '').replace('\u200f', '')
     es_ios = linea_limpia.startswith('[')
     
     try:
