@@ -8,7 +8,7 @@ const FileUploader = () => {
     const navigate = useNavigate();
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
-    const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
+    const [errorModal, setErrorModal] = useState({ isOpen: false, title: '', message: '' });
     const fileInputRef = useRef(null);
 
     // Función para validar que sea .txt o .zip
@@ -78,14 +78,15 @@ const FileUploader = () => {
 
             if (!res.ok || data.errors?.length > 0) {
                 const mensajeError = data.errors?.[0]?.info || 'Error al procesar el archivo';
-                setErrorModal({ isOpen: true, message: mensajeError });
+                const tituloError = data.errors?.[0]?.error || 'Error';
+                setErrorModal({ isOpen: true, title: tituloError, message: mensajeError });
                 return;
             }
 
             navigate('/dashboard', { state: data });
 
         } catch (err) {
-            setErrorModal({ isOpen: true, message: 'No se pudo conectar con el servidor. Verificá que el backend esté corriendo.' });
+            setErrorModal({ isOpen: true, title: 'Error de conexión', message: 'No se pudo conectar con el servidor. Verificá que el backend esté corriendo.' });
         }
     };
 
@@ -149,8 +150,8 @@ const FileUploader = () => {
 
             <Modal 
                 isOpen={errorModal.isOpen} 
-                onClose={() => setErrorModal({ isOpen: false, message: '' })}
-                title="Formato no soportado"
+                onClose={() => setErrorModal({ isOpen: false, title: '', message: '' })}
+                title={errorModal.title}
                 message={errorModal.message}
                 type="warning"
             />
