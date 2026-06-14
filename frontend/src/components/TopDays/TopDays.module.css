@@ -1,0 +1,23 @@
+.boxCard {
+    background-color: var(--color-btn-secondary);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.title {
+    margin: 0 0 0 0.5rem;
+    font-size: var(--font-body-sm);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.subtitle {
+    margin: 0.2rem 0 1rem 0.5rem;
+    color: var(--color-text, #fff);
+    font-size: var(--font-body-sm);
+}

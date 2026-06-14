@@ -1,6 +1,7 @@
 import { useLocation, Navigate } from 'react-router-dom'
 import TopSender from '../../components/TopSender/TopSender';
 import TopEmoji from '../../components/TopEmoji/TopEmoji';
+import TopDays from '../../components/TopDays/TopDays';
 import WordCloud from '../../components/WordCloud/WordCloud';
 import TopHour from '../../components/TopHour/TopHour';
 const Dashboard = () => {
@@ -52,9 +53,12 @@ const Dashboard = () => {
 			  	</div>
 			</div>
       
-			<div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+			<div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap', padding: '2rem' }}>
 				<div style={{ width: '100%', maxWidth: '650px' }}>
 					<TopHour data={backendData.metrics.messages_by_hour} />
+				</div>
+				<div style={{ width: '100%', maxWidth: '650px' }}>
+					<TopDays data={backendData.metrics.messages_by_day_of_week} />
 				</div>
 			</div>
 
@@ -62,8 +66,7 @@ const Dashboard = () => {
 				<WordCloud data={backendData?.metrics?.wordcloud_data} />
 			</div>
 
-        </div>
-
+		</div>
     );
 };
 
