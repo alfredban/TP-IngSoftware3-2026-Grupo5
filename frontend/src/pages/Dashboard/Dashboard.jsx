@@ -1,6 +1,7 @@
 import { useLocation, Navigate } from 'react-router-dom'
 import TopSender from '../../components/TopSender/TopSender';
 import TopEmoji from '../../components/TopEmoji/TopEmoji';
+import TopHour from '../../components/TopHour/TopHour';
 const Dashboard = () => {
     const location = useLocation();
 
@@ -55,7 +56,13 @@ const Dashboard = () => {
                   </div>
 
                 </div>
-        </div>        
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+                    <div style={{ width: '100%', maxWidth: '650px' }}>
+                        <TopHour data={backendData.metrics.messages_by_hour} />
+                    </div>
+                </div>
+
+        </div>
 
     );
 };
