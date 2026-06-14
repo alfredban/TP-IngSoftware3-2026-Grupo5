@@ -17,7 +17,7 @@ const TotalMessages = ({ data }) => {
 
             <div className={styles.data}>{data}</div>
 
-            <div className={styles.description}>En todo el chat</div>
+            <div className={styles.description}>En base al todo el historial del chat</div>
         </div>
     );
 

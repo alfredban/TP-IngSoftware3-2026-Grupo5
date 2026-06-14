@@ -10,7 +10,8 @@ const WordCloud = ({ data }) => {
         const measure = () => {
             if (!containerRef.current) return;
             const width = containerRef.current.offsetWidth;
-            if (width > 0) setDimensions({ width, height: Math.floor(width * 0.6) });
+            const height = containerRef.current.offsetHeight;
+            if (width > 0 && height > 0) setDimensions({ width, height });
         };
         measure();
         const raf = requestAnimationFrame(measure);
@@ -87,10 +88,12 @@ const WordCloud = ({ data }) => {
 
     return (
         <div className={styles.boxCard}>
-            <h2>Nube de Palabras</h2>
-            <p>Palabras más frecuentes del chat</p>
+            <div className={styles.header}>
+                <h2>Nube de Palabras</h2>
+                <p>Palabras más frecuentes del chat</p>
+            </div>
             <div ref={containerRef} className={styles.wordcloudContainer}>
-                <canvas ref={canvasRef} style={{ display: 'block', width: '100%' }} />
+                <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
             </div>
         </div>
     );
