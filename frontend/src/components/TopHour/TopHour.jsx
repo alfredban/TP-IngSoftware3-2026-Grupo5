@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './TopDays.module.css';
+import styles from './TopHour.module.css';
 import { Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -11,14 +11,14 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
-const TopDays = ({ data }) => {
+const TopHour = ({ data }) => {
 
     if (!data || data.length === 0) {
         return <p style={{ color: 'red' }}>No se han recibido datos para mostrar.</p>;
     }
 
     const chartData = {
-        labels: data.map(d => d.day),
+        labels: data.map(d => d.hour + 'h'),
         datasets: [
             {
                 data: data.map(d => d.messages),
@@ -52,11 +52,11 @@ const TopDays = ({ data }) => {
 
     return (
         <div className={styles.boxCard}>
-            <div className={styles.title}>Actividad Semanal</div>
-            <p className={styles.subtitle}>Días de la semana con mayor actividad</p>
+            <div className={styles.title}>Actividad por Hora</div>
+            <p className={styles.subtitle}>Franja horaria con mayor actividad</p>
             <Bar data={chartData} options={options} />
         </div>
     );
 };
 
-export default TopDays;
+export default TopHour;
