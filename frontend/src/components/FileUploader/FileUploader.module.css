@@ -1,0 +1,75 @@
+/* Heredamos variables del System Design global pero acotadas a este módulo */
+.uploadBox {
+    background-color: var(--color-btn-secondary);
+    border-radius: 8px;
+    padding: 3.5rem 2rem;
+    width: 100%;
+    max-width: 650px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    transition: all 0.2s ease-in-out;
+    margin: 0 auto;
+}
+
+.uploadBox.dragging {
+    background-color: var(--color-btn-secondary-hover);
+    outline: 2px dashed var(--color-text-muted);
+    outline-offset: -10px;
+}
+
+.iconContainer {
+    margin-bottom: 0.5rem;
+}
+
+.textGroup {
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.fileInfoContainer {
+    background-color: var(--color-bg);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 0.5rem;
+}
+
+.fileName {
+    flex: 1;
+    text-align: left;
+    font-size: var(--font-body-md);
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fileSize {
+    background-color: var(--color-btn-secondary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.actions {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Creamos la variación del botón verde específica para este componente */
+.btnSuccess {
+    background-color: var(--color-success);
+    color: #ffffff;
+}
+
+.btnSuccess:hover {
+    filter: brightness(0.9);
+}

@@ -1,0 +1,54 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+    background-color: var(--color-btn-secondary); 
+    border-radius: 12px;
+    width: 90%;
+    max-width: 420px; /* Un poco más ancho para evitar que el texto salte de línea feo */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    animation: slideUp 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Todo el contenido centrado */
+    padding: 2.5rem 2rem 2rem 2rem;
+}
+
+.iconWrapper {
+    background-color: var(--color-bg); 
+    padding: 1.25rem;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid transparent; /* El color del borde ahora lo controla React en linea */
+    margin-bottom: 0.5rem;
+}
+
+.modalFooter {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}

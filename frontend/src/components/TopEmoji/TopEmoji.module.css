@@ -1,0 +1,45 @@
+.boxCard {
+    background-color: var(--color-btn-secondary);
+    border-radius: 8px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    transition: all 0.2s ease-in-out;
+    height: 160px;
+}
+
+.infoContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.title {
+    margin: 0;
+    font-size: var(--font-body-sm);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data {
+    margin: 0;
+    color: var(--color-text, #fff);
+    font-size: var(--font-h2);
+    font-weight: var(--weight-bold);
+}
+
+.description {
+    margin: 0;
+    font-size: var(--font-body-sm);
+    color: var(--color-text-muted);
+}
