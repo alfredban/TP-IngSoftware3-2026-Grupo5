@@ -1,6 +1,7 @@
 import { useLocation, Navigate } from 'react-router-dom'
 import TopSender from '../../components/TopSender/TopSender';
 import TopEmoji from '../../components/TopEmoji/TopEmoji';
+import WordCloud from '../../components/WordCloud/WordCloud';
 const Dashboard = () => {
     const location = useLocation();
 
@@ -54,7 +55,14 @@ const Dashboard = () => {
                     <TopEmoji data={backendData.metrics.top_emoji} />
                   </div>
 
+
                 </div>
+
+
+                <div>
+                    <WordCloud data={backendData?.metrics?.wordcloud_data} />
+                </div>
+
         </div>        
 
     );
