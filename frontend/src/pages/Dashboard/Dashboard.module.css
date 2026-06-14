@@ -1,0 +1,80 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title h1 {
+    margin: 0;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filename {
+    color: var(--text-secondary);
+    font-size: 16px;
+    text-align: left;
+    width: 100%;
+}
+
+
+.metricsContainer {
+    display: grid;
+    grid-template-areas:
+        "sender sender emoji total"
+        "hour hour days days"
+        "wordcloud wordcloud wordcloud wordcloud";
+    gap: 10px;
+    width: 100%;
+}
+
+.boxSender {
+    grid-area: sender;
+}
+
+.boxEmoji {
+    grid-area: emoji;
+}
+
+.boxTotal {
+    grid-area: total;
+}
+
+.boxHour {
+    grid-area: hour;
+}
+
+.boxDays {
+    grid-area: days;
+}
+
+.boxHour>div,
+.boxDays>div {
+    height: 100%;
+}
+
+.boxWordCloud {
+    grid-area: wordcloud;
+}
