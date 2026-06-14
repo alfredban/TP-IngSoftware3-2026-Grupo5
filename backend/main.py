@@ -109,7 +109,7 @@ async def upload_file(file: UploadFile = File(...)):
         messages_by_day_of_week = obtener_mensajes_por_dia_semana(df)
         
         # 6. Nube de palabras
-        wordcloud_data = obtener_frecuencia_palabras(df)
+        wordcloud_data = obtener_frecuencia_palabras(df,100)
 
         # Determinamos dinámicamente el tipo original subido
         tipo_archivo = "zip" if file.filename.endswith('.zip') else "txt"

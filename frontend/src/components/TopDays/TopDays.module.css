@@ -2,7 +2,6 @@
     background-color: var(--color-btn-secondary);
     border-radius: 8px;
     width: 100%;
-    max-width: 650px;
     margin: 0 auto;
     padding: 1.5rem 2rem;
     transition: all 0.2s ease-in-out;

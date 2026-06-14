@@ -2,37 +2,44 @@
     background-color: var(--color-btn-secondary);
     border-radius: 8px;
     width: 100%;
-    max-width: 650px;
     margin: 0 auto;
-    align-items: center;   
-    gap: 1.2rem;           
-    padding: 1.5rem 2rem;  
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
     transition: all 0.2s ease-in-out;
     height: 160px;
+}
+
+.infoContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 .icon {
     font-size: 1rem;
     line-height: 1;
-    margin-left: 270px;
-    display: flex;
-    justify-content: right;
 }
 
 .title {
-    margin: 0 0 0 0.5rem; 
-    font-size: var(--font-body-sm); 
-    color: var(--color-text-muted); 
+    margin: 0;
+    font-size: var(--font-body-sm);
+    color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.name {
-    margin: 0.2rem 0 0 0.5rem; 
+.data {
+    margin: 0;
     color: var(--color-text, #fff);
-    font-size: var(--font-h4); 
-    font-weight: var(--weight-bold); 
-    font-size: 2.5rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    font-size: var(--font-h2);
+    font-weight: var(--weight-bold);
+}
+
+.description {
+    margin: 0;
+    font-size: var(--font-body-sm);
+    color: var(--color-text-muted);
 }

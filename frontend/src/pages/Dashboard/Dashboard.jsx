@@ -1,73 +1,44 @@
-import { useLocation, Navigate } from 'react-router-dom'
-import TopSender from '../../components/TopSender/TopSender';
-import TopEmoji from '../../components/TopEmoji/TopEmoji';
-import TopDays from '../../components/TopDays/TopDays';
-import WordCloud from '../../components/WordCloud/WordCloud';
-import TopHour from '../../components/TopHour/TopHour';
+import { useLocation, Navigate, useNavigate } from 'react-router-dom'
+import { TotalMessages, TopSender, TopEmoji, TopDays, WordCloud, TopHour } from '../../components';
+import styles from './Dashboard.module.css';
+import { MoveLeft } from 'lucide-react';
+
 const Dashboard = () => {
-    const location = useLocation();
+	const location = useLocation();
+	const navigate = useNavigate();
 
-    // Se recibe el JSON completo del backend
-    const backendData = location.state;
+	// Se recibe el JSON completo del backend
+	const backendData = location.state;
 
-    // Si alguien entra a /dashboard sin subir un archivo, lo devolvemos al upload
-    if (!backendData) {
-        return <Navigate to="/upload" replace />;
-    }
+	// Si alguien entra a /dashboard sin subir un archivo, lo devolvemos al upload
+	if (!backendData) {
+		return <Navigate to="/upload" replace />;
+	}
 
-    return (
-		<div>
-			<div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-				<h1 className="h1">Dashboard de Análisis</h1>
+	return (
+		<div className={styles.container}>
+			<div className={styles.header}>
+				<div className={styles.title}>
+					<h1>Dashboard de Análisis</h1>
+					<button className={`btn btn-primary ${styles.button}`} onClick={() => navigate('/upload')}><MoveLeft /> Analizar otro archivo</button>
+				</div>
 
-				<h2 className="h2 text-warning">ESTO ES SOLO DE PRUEBA PARA EL PASAJE DE INFORMACIÓN ENTRE UPLOAD Y EL DASHBOARD</h2>
-				
-				<p className="text-body-md text-success">
-                	Archivo analizado con éxito: {backendData.filename}
+				<p className={styles.filename}>
+					<span>Archivo analizado:</span> {backendData.filename}
 				</p>
-
-				<div style={{ marginTop: '2rem' }}>
-                	<h3 className="h3">Respuesta cruda del servidor:</h3>
-
-					{/* Cuadro oscuro para mostrar el JSON estructurado */}
-					<pre style={{
-						backgroundColor: 'var(--color-bg)',
-						color: 'var(--color-text)',
-						padding: '1.5rem',
-						borderRadius: '8px',
-						overflowX: 'auto',
-						border: '1px solid var(--color-btn-secondary)'
-					}}>
-						{JSON.stringify(backendData, null, 2)}
-					</pre>
-				</div>
-
 			</div>
 
-			<div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap', padding: '0 2rem' }}>
-				<div>
-					<TopSender data={backendData.metrics.top_sender} />
-				</div>
-			  	<div>
-					<TopEmoji data={backendData.metrics.top_emoji} />
-			  	</div>
-			</div>
-      
-			<div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap', padding: '2rem' }}>
-				<div style={{ width: '100%', maxWidth: '650px' }}>
-					<TopHour data={backendData.metrics.messages_by_hour} />
-				</div>
-				<div style={{ width: '100%', maxWidth: '650px' }}>
-					<TopDays data={backendData.metrics.messages_by_day_of_week} />
-				</div>
-			</div>
-
-			<div>
-				<WordCloud data={backendData?.metrics?.wordcloud_data} />
+			<div className={styles.metricsContainer}>
+				<div className={styles.boxSender}><TopSender data={backendData.metrics.top_sender} /></div>
+				<div className={styles.boxEmoji}><TopEmoji data={backendData.metrics.top_emoji} /></div>
+				<div className={styles.boxTotal}><TotalMessages data={backendData.metrics.total_messages} /></div>
+				<div className={styles.boxHour}><TopHour data={backendData.metrics.messages_by_hour} /></div>
+				<div className={styles.boxDays}><TopDays data={backendData.metrics.messages_by_day_of_week} /></div>
+				<div className={styles.boxWordCloud}><WordCloud data={backendData?.metrics?.wordcloud_data} /></div>
 			</div>
 
 		</div>
-    );
+	);
 };
 
 export default Dashboard;
