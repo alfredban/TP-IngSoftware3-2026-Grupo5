@@ -18,7 +18,7 @@ const TopHour = ({ data }) => {
     }
 
     const chartData = {
-        labels: data.map(d => d.hour),
+        labels: data.map(d => d.hour + 'h'),
         datasets: [
             {
                 data: data.map(d => d.messages),
@@ -28,6 +28,11 @@ const TopHour = ({ data }) => {
         ],
     };
 
+    // Obtenemos el valor de la variable CSS para pasárselo a Chart.js
+    const textColor = typeof window !== 'undefined'
+        ? getComputedStyle(document.documentElement).getPropertyValue('--color-text-muted').trim()
+        : '#e1e1e6';
+
     const options = {
         responsive: true,
         plugins: {
@@ -35,11 +40,11 @@ const TopHour = ({ data }) => {
         },
         scales: {
             x: {
-                ticks: { color: 'var(--color-text-muted)' },
+                ticks: { color: textColor },
                 grid: { display: false },
             },
             y: {
-                ticks: { color: 'var(--color-text-muted)' },
+                ticks: { color: textColor },
                 grid: { color: 'rgba(255,255,255,0.05)' },
             },
         },
