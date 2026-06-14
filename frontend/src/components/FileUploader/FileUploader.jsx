@@ -8,17 +8,17 @@ const FileUploader = () => {
     const navigate = useNavigate();
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
-    const [errorModal, setErrorModal] = useState({ isOpen: false, title: '', message: '' });
+    const [errorModal, setErrorModal] = useState({ isOpen: false, title: '', message: '', type: 'warning' });
     const fileInputRef = useRef(null);
 
     // Función para validar que sea .txt o .zip
     const isValidFile = (file) => {
         const validTypes = ['text/plain', 'application/zip', 'application/x-zip-compressed'];
         const validExtensions = ['.txt', '.zip'];
-        
+
         const isTypeValid = validTypes.includes(file.type);
         const isExtensionValid = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
-        
+
         return isTypeValid || isExtensionValid;
     };
 
@@ -26,36 +26,36 @@ const FileUploader = () => {
         e.preventDefault();
         setIsDragging(true);
     };
-    
+
     const handleDragLeave = () => setIsDragging(false);
-    
+
     const handleDrop = (e) => {
         e.preventDefault();
         setIsDragging(false);
         const droppedFile = e.dataTransfer.files[0];
-        
+
         if (droppedFile) {
             if (isValidFile(droppedFile)) {
                 setFile(droppedFile);
             } else {
-                setErrorModal({ isOpen: true, message: "Por favor, sube únicamente un archivo .txt o\u00A0.zip" });
+                setErrorModal({ isOpen: true, type: 'warning', title: "Archivo no compatible", message: "Solo se permite subir un archivo .txt o .zip" });
             }
         }
     };
 
     const handleFileSelect = (e) => {
         const selectedFile = e.target.files[0];
-        
+
         if (selectedFile) {
             if (isValidFile(selectedFile)) {
                 setFile(selectedFile);
             } else {
-                setErrorModal({ isOpen: true, message: "Por favor, sube únicamente un archivo .txt o\u00A0.zip" });
+                setErrorModal({ isOpen: true, type: 'warning', title: "Archivo no compatible", message: "Solo se permite subir un archivo .txt o .zip" });
             }
         }
-        
+
         // Limpiar el input para poder volver a elegir el mismo archivo si se cancela
-        e.target.value = null; 
+        e.target.value = null;
     };
 
     const formatFileSize = (bytes) => {
@@ -79,14 +79,14 @@ const FileUploader = () => {
             if (!res.ok || data.errors?.length > 0) {
                 const mensajeError = data.errors?.[0]?.info || 'Error al procesar el archivo';
                 const tituloError = data.errors?.[0]?.error || 'Error';
-                setErrorModal({ isOpen: true, title: tituloError, message: mensajeError });
+                setErrorModal({ isOpen: true, type: 'error', title: tituloError, message: mensajeError });
                 return;
             }
 
             navigate('/dashboard', { state: data });
 
         } catch (err) {
-            setErrorModal({ isOpen: true, title: 'Error de conexión', message: 'No se pudo conectar con el servidor. Verificá que el backend esté corriendo.' });
+            setErrorModal({ isOpen: true, type: 'error', title: 'Error de conexión', message: <>No se pudo conectar con el servidor.<br />Intente de nuevo mas tarde</> });
         }
     };
 
@@ -148,12 +148,12 @@ const FileUploader = () => {
                 />
             </div>
 
-            <Modal 
-                isOpen={errorModal.isOpen} 
-                onClose={() => setErrorModal({ isOpen: false, title: '', message: '' })}
+            <Modal
+                isOpen={errorModal.isOpen}
+                onClose={() => setErrorModal({ isOpen: false, title: '', message: '', type: 'warning' })}
                 title={errorModal.title}
                 message={errorModal.message}
-                type="warning"
+                type={errorModal.type}
             />
         </>
     );
