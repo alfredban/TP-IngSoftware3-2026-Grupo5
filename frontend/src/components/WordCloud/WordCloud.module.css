@@ -1,0 +1,32 @@
+.wordcloudContainer {
+  background-color: whitesmoke;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid var(--color-btn-secondary);
+  width: 100%;
+  min-height: 350px;
+  box-sizing: border-box;
+}
+
+.boxCard{
+    background-color: var(--color-btn-secondary);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 800px;
+    margin: 1rem auto;
+    align-items: center;   
+    gap: 1.2rem;           
+    padding: 1.5rem 2rem;  
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.wordcloud-empty,
+.wordcloud-loading {
+  color: var(--color-text-muted);
+  text-align: center;
+  font-size: var(--font-body-md);
+  font-family: var(--font-family);
+  padding: 1rem 0;
+}
